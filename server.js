@@ -10,8 +10,19 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
+funci;
+
 connection.query(
-   "SELECT * FROM `memory_cards` WHERE `memory_cards`.`user_id` = 'cd977c3b-d1f3-40a6-8799-8043c7baf089' AND (`memory_cards`.`imagery` LIKE '%is%' OR `memory_cards`.`answer` LIKE '%is%') ORDER BY `memory_cards`.`created_at` ASC;",
+   `
+   SELECT 
+	   id , email, created_at
+   FROM 
+	   users
+   WHERE 
+	   email = 'kawika@gmail.com'
+		AND password = 'replace_me'
+   LIMIT 1;
+    `,
    (err, res, fields) => {
       if (err) {
          console.log(err);
