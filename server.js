@@ -10,12 +10,15 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
-connection.query("SELECT 1 + 1 AS solution", (error, results, fields) => {
-   if (error) {
-      console.log(error);
-   } else {
-      console.log("The solution is: ", results[0].solution);
+connection.query(
+   "SELECT * FROM `memory_cards` WHERE `memory_cards`.`user_id` = 'cd977c3b-d1f3-40a6-8799-8043c7baf089' AND (`memory_cards`.`imagery` LIKE '%is%' OR `memory_cards`.`answer` LIKE '%is%') ORDER BY `memory_cards`.`created_at` ASC;",
+   (err, res, fields) => {
+      if (err) {
+         console.log(err);
+      } else {
+         console.log(res);
+      }
    }
-});
+);
 
 connection.end();
