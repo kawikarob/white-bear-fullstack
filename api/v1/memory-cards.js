@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
       userId,
       constructedSearchTerm,
       constructedSearchTerm,
-      order,
+      { toSqlString: () => order },
    ])
       .then((memoryCards) => {
          const camelCaseMemoryCards = memoryCards.map((memoryCard) => {

@@ -3,63 +3,22 @@ import Header from "../ui/Header";
 import Navigation from "../ui/Navigation";
 import AppTemplate from "../ui/AppTemplate";
 import MemoryCard from "../ui/MemoryCard";
-import orderBy from "lodash/orderBy";
 import axios from "axios";
+const userId = "cd977c3b-d1f3-40a6-8799-8043c7baf089";
 
 export default class AllCards extends React.Component {
    constructor(props) {
       super(props);
 
       this.state = {
-         order: '["createdAt","desc"]',
-         displayedMemoryCards: [],
-         allMemoryCards: [],
+         order: "memory_cards.created_at%20DESC",
+         memoryCards: [],
+         searchTerm: "",
       };
    }
 
    componentDidMount() {
-      axios
-         .get(
-            "/api/v1/memory-cards?userId=cd977c3b-d1f3-40a6-8799-8043c7baf089&searchTerm=%is%&order=%60memory_cards%60.%60created_at%60%20DESC"
-         )
-         .then((res) => {
-            // handle success
-            console.log(res.data);
-            const memoryCards = res.data;
-            this.setState({
-               displayedMemoryCards: orderBy(
-                  memoryCards,
-                  ["createdAt"],
-                  ["desc"]
-               ),
-               allMemoryCards: orderBy(memoryCards, ["createdAt"], ["desc"]),
-            });
-         })
-         .catch((error) => {
-            // handle error
-            console.log(error);
-         });
-   }
-
-   filterByInput() {
-      const input = document.getElementById("search-input").value;
-      const lowerCasedInput = input.toLowerCase();
-      console.log(lowerCasedInput);
-      const copyOfAllMemoryCards = [...this.state.allMemoryCards];
-      console.log(copyOfAllMemoryCards);
-      const filteredMemoryCards = copyOfAllMemoryCards.filter((memoryCard) => {
-         const lowerCasedImagery = memoryCard.imagery.toLowerCase();
-         const lowerCasedAnswer = memoryCard.answer.toLowerCase();
-         if (
-            lowerCasedImagery.includes(lowerCasedInput) ||
-            lowerCasedAnswer.includes(lowerCasedInput)
-         ) {
-            return true;
-         } else return false;
-      });
-      this.setState({ displayedMemoryCards: filteredMemoryCards }, () => {
-         this.setMemoryCards();
-      });
+      this.setMemoryCards();
    }
 
    setOrder(e) {
@@ -70,25 +29,29 @@ export default class AllCards extends React.Component {
       });
    }
 
-   setMemoryCards() {
-      console.log("setting memory cards");
-      const copyOfDisplayedMemoryCards = [...this.state.displayedMemoryCards];
-      const toJson = JSON.parse(this.state.order);
-      console.log(...toJson);
-      const orderedMemoryCards = orderBy(copyOfDisplayedMemoryCards, ...toJson);
-      console.log(orderedMemoryCards);
-      this.setState({ displayedMemoryCards: orderedMemoryCards });
+   setSearchTerm() {
+      const searchInput = document.getElementById("search-input").value;
+      this.setState({ searchTerm: searchInput }, () => {
+         this.setMemoryCards();
+      });
    }
 
-   setMemoryCardsOrder(e) {
-      const newOrder = e.target.value;
-      console.log(newOrder);
-      const copyOfMemoryCards = [...this.state.memoryCards];
-      const toJson = JSON.parse(newOrder);
-      console.log(...toJson);
-      const orderMemoryCards = orderBy(copyOfMemoryCards, ...toJson);
-      console.log(orderMemoryCards);
-      this.setState({ order: newOrder, memoryCards: orderMemoryCards });
+   setMemoryCards() {
+      axios
+         .get(
+            `/api/v1/memory-cards?userId=${userId}&searchTerm=${this.state.searchTerm}&order=${this.state.order}`
+         )
+         .then((res) => {
+            // handle success
+            console.log(res.data);
+            this.setState({
+               memoryCards: res.data,
+            });
+         })
+         .catch((error) => {
+            // handle error
+            console.log(error);
+         });
    }
 
    render() {
@@ -106,7 +69,7 @@ export default class AllCards extends React.Component {
                <button
                   type="submit"
                   className="btn btn-secondary btn-sm col-3 offset-1 thick-border"
-                  onClick={() => this.filterByInput()}
+                  onClick={() => this.setSearchTerm()}
                >
                   Search
                </button>
@@ -122,12 +85,16 @@ export default class AllCards extends React.Component {
                      className="form-control border"
                      onChange={(e) => this.setOrder(e)}
                   >
-                     <option value='["createdAt", "desc"]'>Most recent</option>
-                     <option value='["createdAt","asc"]'>Oldest</option>
-                     <option value='[["totalSuccessfulAttempts", "createdAt"],["asc", "asc"]]'>
+                     <option value="memory_cards.created_at%20DESC">
+                        Most recent
+                     </option>
+                     <option value="memory_cards.created_at%20ASC">
+                        Oldest
+                     </option>
+                     <option value="memory_cards.total_successful_attempts%20ASC,%20memory_cards.created_at%20ASC">
                         Hardest
                      </option>
-                     <option value='[["totalSuccessfulAttempts", "createdAt"],["desc", "desc"]]'>
+                     <option value="memory_cards.total_successful_attempts%20DESC,%20memory_cards.created_at%20DESC">
                         Easiest
                      </option>
                   </select>
@@ -149,7 +116,7 @@ export default class AllCards extends React.Component {
                      <option value='["createdAt", "asc"]'>Oldest</option>
                   </select> */}
 
-            {this.state.displayedMemoryCards.map((memoryCard) => {
+            {this.state.memoryCards.map((memoryCard) => {
                return <MemoryCard card={memoryCard} key={memoryCard.id} />;
             })}
          </AppTemplate>
