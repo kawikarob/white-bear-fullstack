@@ -3,6 +3,7 @@ const app = express();
 const mysql = require("mysql");
 // var cors = require("cors");
 
+app.use(express.json());
 // app.use(cors());
 
 app.use("/api/v1/users", require("./api/v1/users"));

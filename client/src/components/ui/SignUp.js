@@ -1,11 +1,11 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import classnames from "classnames";
-import hash from "object-hash";
 import { v4 as getUuid } from "uuid";
-import axios from "axios";
+// import axios from "axios";
 import { connect } from "react-redux";
-import actions from "../../store/actions";
+import axios from "axios";
+// import actions from "../../store/actions";
 
 class SignUp extends React.Component {
    constructor(props) {
@@ -98,32 +98,44 @@ class SignUp extends React.Component {
          this.state.hasEmailError === false &&
          this.state.hasPasswordError === false
       ) {
+         // Create user obj
          const user = {
             id: getUuid(),
             email: emailInput,
-            password: hash(passwordInput),
+            password: passwordInput,
             createdAt: Date.now(),
          };
          console.log("Created user object for POST: ", user);
-         // Mimic API Presponse:
+         //post to API
          axios
-            .get(
-               "https://raw.githubusercontent.com/kawikarob/white-bear-mpa/master/src/mock-data/user.json"
-            )
+            .post("/api/v1/users", user)
             .then((res) => {
-               // handle success
-               const currentUser = res.data;
-               console.log(currentUser);
-               this.props.dispatch({
-                  type: actions.UPDATE_CURRENT_USER,
-                  payload: res.data,
-               });
+               console.log(res);
             })
-            .catch((error) => {
-               // handle error
-               console.log(error);
+            .catch((err) => {
+               console.log(err);
             });
-         this.props.history.push("/create-answer");
+
+         //this.props.history.push("/create-answer");
+
+         // Mimic API Presponse:
+         // axios
+         //    .get(
+         //       "https://raw.githubusercontent.com/kawikarob/white-bear-mpa/master/src/mock-data/user.json"
+         //    )
+         //    .then((res) => {
+         //       // handle success
+         //       const currentUser = res.data;
+         //       console.log(currentUser);
+         //       this.props.dispatch({
+         //          type: actions.UPDATE_CURRENT_USER,
+         //          payload: res.data,
+         //       });
+         //    })
+         //    .catch((error) => {
+         //       // handle error
+         //       console.log(error);
+         //    });
       }
    }
 
@@ -164,7 +176,13 @@ class SignUp extends React.Component {
                            Email must contain at least 3 unique characters{" "}
                         </div> */}
 
-                        <label className="text-muted mb-2">Password</label>
+                        <label className="text-muted mb-2">
+                           Create a password
+                           <br />
+                           <span className="text-muted">
+                              Must be at least 9 characters
+                           </span>
+                        </label>
                         <input
                            type="password"
                            className={classnames({

@@ -1,7 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import classnames from "classnames";
-import hash from "object-hash";
+
 import { v4 as getUuid } from "uuid";
 import axios from "axios";
 import { connect } from "react-redux";
@@ -81,7 +81,7 @@ class Login extends React.Component {
          const user = {
             id: getUuid(),
             email: emailInput,
-            password: hash(passwordInput),
+            password: passwordInput,
             createdAt: Date.now(),
          };
          console.log("Created user object for POST: ", user);
